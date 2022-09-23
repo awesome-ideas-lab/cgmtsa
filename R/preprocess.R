@@ -29,9 +29,9 @@ prepro <- function(inputdir= "", outputdir= "", outlierdet= TRUE, interval= 15, 
 	  if(colnm[1] != "timestamp" || colnm[2] != "sglucose" || colnm[3] != "bglucose"){
 	    stop(paste("The format fo file '", f, "' is incorrect and cannot be read.", sep= ""))
 	  }
-    
+
 	  cgmts  = qcfun(cgmts, outlierdet, interval, imputation, immethod, maxgap, compeleteday, removeday, transunits, removeflday)
-	  write.csv(cgmts, paste(outputdir,f,sep= "\t"), row.names = FALSE)
+	  write.csv(cgmts, paste(outputdir,f,sep= ''), row.names = FALSE)
 	  }
 }
 
