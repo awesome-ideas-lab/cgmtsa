@@ -16,18 +16,22 @@
 #' @param transunits Logical. If TURE the glucose values will be divided by 18.
 #' @param removeflday Logical. If TRUE the data of first and last day will be filter.
 #' @export
-prepro <- function(inputdir="", outputdir="", outlierdet = TRUE, interval = 15, imputation = FALSE,
-                   immethod = "linear", maxgap = 60, compeleteday = TRUE, removeday = FALSE, device = 0, transunits = FALSE, removeflday = TRUE){
-	fileNames = list.files(inputdir)
-	for(f in fileNames){
+
+prepro <- function(inputdir= "", outputdir= "", outlierdet= TRUE, interval= 15, imputation= FALSE,
+                   immethod = "linear", maxgap= 60, compeleteday= TRUE, removeday= FALSE, device= 0, transunits= FALSE, removeflday= TRUE){
+	
+  fileNames = list.files(inputdir)
+	
+  for(f in fileNames){
 	  print(paste("processing file:", f))
-	  cgmts <- fformat(fpath = paste(inputdir, f, sep = ''), device = device)
+	  cgmts <- fformat(fpath= paste(inputdir, f, sep= ''), device= device)
 	  colnm <- colnames(cgmts)
 	  if(colnm[1] != "timestamp" || colnm[2] != "sglucose" || colnm[3] != "bglucose"){
-	    stop(paste("The format fo file '",f ,"' is incorrect and cannot be read.",sep = ""))
+	    stop(paste("The format fo file '", f, "' is incorrect and cannot be read.", sep= ""))
 	  }
-	  cgmts  = qcfun(cgmts, outlierdet, interval, imputation,immethod, maxgap, compeleteday,removeday, transunits, removeflday)
-	  write.csv(cgmts, paste(outputdir,f,sep=''),row.names = FALSE)
+    
+	  cgmts  = qcfun(cgmts, outlierdet, interval, imputation, immethod, maxgap, compeleteday, removeday, transunits, removeflday)
+	  write.csv(cgmts, paste(outputdir,f,sep= "\t"), row.names = FALSE)
 	  }
 }
 
