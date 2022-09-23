@@ -20,7 +20,7 @@ cgmplot <- function(inputdir, outputdir, useig= FALSE, markoutliers= TRUE, inter
     cgmtsall = read.csv(paste(inputdir, "/", f, sep = ''),stringsAsFactors= FALSE)
     vectimestamp <- as.vector(cgmtsall$timestamp)
     vectimestamp <- unlist(strsplit(vectimestamp,split=" "))
-    maxtimestamp <- matrix(vectimestamp,ncol=2,byrow=T)[,1]
+    maxtimestamp <- matrix(vectimestamp, ncol= 2,byrow= T)[,1]
     cgmtsall <- dplyr::mutate(cgmtsall, timedate = maxtimestamp)
     #print(head(cgmtsall))
     print("plottinig ACF")
@@ -30,9 +30,9 @@ cgmplot <- function(inputdir, outputdir, useig= FALSE, markoutliers= TRUE, inter
     print("plottinig 3d")
     cgm3d(cgmtsall, fname, outputdir, useig, interval)
     print("plottinig decom")
-    cgmdecom(cgmtsall, fname, outputdir, useig,interval, html = html)
+    cgmdecom(cgmtsall, fname, outputdir, useig, interval, html= html)
     print("plottinig trace")
-    cgmtrace(cgmtsall, fname, outputdir,useig, markoutliers, html = html)
+    cgmtrace(cgmtsall, fname, outputdir, useig, markoutliers, html= html)
   }
 
 }
@@ -130,6 +130,11 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, htm
   seasonal <- stlgts$time.series[,1]
   trend <- stlgts$time.series[,2]
   remainder <- stlgts$time.series[,3]
+
+  #save trend data
+  df <- data.frame(c(cgmtsall$timestamp), c(trend))
+  write.csv(df, paste(outputdir, "homeostasis_level.csv", sep = ""), row.names= FALSE)
+
   #plot seasonal
   seafig <- plotly::plot_ly(
     type = "scatter",
