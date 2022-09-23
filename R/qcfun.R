@@ -38,7 +38,7 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
   }else if(imputation){
     if(immethod == "linear"){
       print("linear imputation")
-      cgmts <- dplyr::mutate(cgmts, imglucose = imputeTS::na.interpolation(cgmts$sglucose,maxgap = as.integer(maxgap/interval)))
+      cgmts <- dplyr::mutate(cgmts, imglucose = imputeTS::na_interpolation(cgmts$sglucose,maxgap = as.integer(maxgap/interval)))
     }else if(immethod == "seadec"){
       print("SEADEC imputation")
       tstype <- ts(cgmts$sglucose,frequency = freq)
