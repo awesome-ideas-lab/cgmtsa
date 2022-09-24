@@ -78,11 +78,11 @@ cgm3d <- function(cgmtsall, fname, outputdir, useig = TRUE,interval){
   x <- as.character(x$INTERVAL)
 
   if(useig){
-    z = matrix(cgmtsall$imglucose,ncol=freq,byrow=T)
+    z = matrix(cgmtsall$imglucose, ncol= freq, byrow= T)
   }else{
-    z = matrix(cgmtsall$sglucose,ncol=freq,byrow=T)
+    z = matrix(cgmtsall$sglucose, ncol= freq, byrow= T)
   }
-  fig <- plotly::plot_ly(x = x, z = z)
+  fig <- plotly::plot_ly(x= x, z= z)
   fig <- plotly::add_surface(fig)
   fig <- plotly::layout(fig,
       scene = list(
@@ -100,33 +100,33 @@ cgm3d <- function(cgmtsall, fname, outputdir, useig = TRUE,interval){
       zaxis = list(title = "Glucose Values")
     )
     )
-  htmlwidgets::saveWidget(fig, paste(outputdir, fname,"_","3d", ".html",sep = ""))
+  htmlwidgets::saveWidget(fig, paste(outputdir, fname, "_", "3d", ".html", sep = ""))
 }
 
 
-cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, html = FALSE){
+cgmdecom <- function(cgmtsall, fname, outputdir, useig= TRUE, interval= 15, html= FALSE){
   freq = 1440/interval
   uniday = unique(cgmtsall$timedate)
   #remove uncompelete day
   for(d in uniday){
     if(useig){
-      if(any(is.na(cgmtsall[cgmtsall$timedate ==d,]$imglucose))){
-        cgmtsall[cgmtsall$timedate ==d,]$timedate <- NA
+      if(any(is.na(cgmtsall[cgmtsall$timedate == d,]$imglucose))){
+        cgmtsall[cgmtsall$timedate == d,]$timedate <- NA
       }
     }else{
-      if(any(is.na(cgmtsall[cgmtsall$timedate ==d,]$sglucose))){
-        cgmtsall[cgmtsall$timedate ==d,]$timedate <- NA
+      if(any(is.na(cgmtsall[cgmtsall$timedate == d,]$sglucose))){
+        cgmtsall[cgmtsall$timedate == d,]$timedate <- NA
       }
     }
   }
   cgmtsall <- cgmtsall[!is.na(cgmtsall$timedate),]
   uniday = unique(cgmtsall$timedate)
   if(useig){
-    gts <- ts(cgmtsall$imglucose, frequency = freq)
+    gts <- ts(cgmtsall$imglucose, frequency= freq)
   }else{
-    gts <- ts(cgmtsall$sglucose, frequency = freq)
+    gts <- ts(cgmtsall$sglucose, frequency= freq)
   }
-  stlgts <- stl(gts,s.window = "periodic")
+  stlgts <- stl(gts, s.window= "periodic")
   seasonal <- stlgts$time.series[,1]
   trend <- stlgts$time.series[,2]
   remainder <- stlgts$time.series[,3]
@@ -139,7 +139,7 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, htm
   write.csv(df_seasonal, paste(outputdir, "seasonal.csv", sep = ""), row.names= FALSE)
 
   df_remainder <- data.frame(c(cgmtsall$timestamp), c(remainder))
-  write.csv(df_remainder, paste(outputdir, "trend.csv", sep = ""), row.names= FALSE)
+  write.csv(df_remainder, paste(outputdir, "remainder.csv", sep = ""), row.names= FALSE)
 
   #plot seasonal
   seafig <- plotly::plot_ly(
