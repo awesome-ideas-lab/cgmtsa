@@ -3,15 +3,16 @@
 #
 #' Quality Control for CGM data, include imputation and outlier detection
 
-qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, immethod = "linear",
-                 maxgap = 60, compeleteday = TRUE, removeday = FALSE, transunits = FALSE, removeflday = TRUE){
+qcfun<- function(cgmts, outlierdet= TRUE, interval= 15, imputation= FALSE, immethod= "linear",
+                 maxgap= 60, compeleteday= TRUE, removeday= FALSE, transunits= FALSE, removeflday= TRUE){
   cgmts <- cgmts[order(lubridate::ymd_hms(cgmts$timestamp)),]
   vectimestamp <- as.vector(cgmts$timestamp)
-  vectimestamp <- unlist(strsplit(vectimestamp,split=" "))
-  maxtimestamp <- matrix(vectimestamp,ncol=2,byrow=T)[,1]
-  cgmts <-  dplyr::mutate(cgmts, timedate = maxtimestamp)
+  vectimestamp <- unlist(strsplit(vectimestamp, split= " "))
+  maxtimestamp <- matrix(vectimestamp, ncol=2, byrow=T)[,1]
+  cgmts <-  dplyr::mutate(cgmts, timedate= maxtimestamp)
   coldate <- unique(cgmts$timedate)
   freq = 1440/interval
+  
   #remove first day and last day
   fday <- coldate[1]
   lday <- coldate[length(coldate)]
@@ -23,7 +24,7 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
   }
 
   if(transunits){
-    cgmts <- dplyr::mutate(cgmts, sglucose = round(sglucose/18,2))
+    cgmts <- dplyr::mutate(cgmts, sglucose = round(sglucose/18, 2))
   }
 
   coldate <- unique(cgmts$timedate)
@@ -38,15 +39,15 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
   }else if(imputation){
     if(immethod == "linear"){
       print("linear imputation")
-      cgmts <- dplyr::mutate(cgmts, imglucose = imputeTS::na_interpolation(cgmts$sglucose,maxgap = as.integer(maxgap/interval)))
+      cgmts <- dplyr::mutate(cgmts, imglucose = imputeTS::na_interpolation(cgmts$sglucose, maxgap = as.integer(maxgap/interval)))
     }else if(immethod == "seadec"){
       print("SEADEC imputation")
-      tstype <- ts(cgmts$sglucose,frequency = freq)
-      tstype <- imputeTS::na.seadec(tstype,algorithm = "interpolation",maxgap = as.integer(maxgap/interval))
+      tstype <- ts(cgmts$sglucose,frequency= freq)
+      tstype <- imputeTS::na_seadec(tstype, algorithm= "interpolation", maxgap= as.integer(maxgap/interval))
       cgmts <- dplyr::mutate(cgmts, imglucose = tstype)
     }else if(immethod == "arima"){
       print("ARIMA imputation")
-      cgmts <- dplyr::mutate(cgmts, imglucose = imputeTS::na.kalman(cgmts$sglucose,model = "auto.arima",maxgap = as.integer(maxgap/interval)))
+      cgmts <- dplyr::mutate(cgmts, imglucose= imputeTS::na_kalman(cgmts$sglucose, model = "auto.arima", maxgap = as.integer(maxgap/interval)))
 
     }
     if(removeday == TRUE){
@@ -76,7 +77,7 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
     cgmts <- dplyr::mutate(cgmts, outliers = NA)
     unidate = unique(cgmts$timedate)
     for (d in unidate){
-      udcgm <- cgmts[cgmts$timedate ==d,]
+      udcgm <- cgmts[cgmts$timedate == d,]
       if(!any(is.na(udcgm$sglucose))){
         udcgmglucose <- udcgm$sglucose
         udcgmts <- ts(udcgmglucose, frequency = freq)
@@ -89,7 +90,7 @@ qcfun<- function(cgmts, outlierdet = TRUE, interval = 15, imputation = FALSE, im
         iodict <- c(io$lambda1)
         names(iodict) <- io$ind
         indinc <- intersect(ao$ind, io$ind)
-        #remove ao or io index according to theri lambda
+        #remove ao or io index according to their lambda
         for(ic in indinc){
           if(aodict[[as.character(ic)]] < iodict[[as.character(ic)]]){
             removeind = which(c(ic) %in% names(aodict))

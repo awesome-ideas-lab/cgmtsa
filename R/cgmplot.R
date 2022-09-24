@@ -131,9 +131,15 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, htm
   trend <- stlgts$time.series[,2]
   remainder <- stlgts$time.series[,3]
 
-  #save trend data
-  df <- data.frame(c(cgmtsall$timestamp), c(trend))
-  write.csv(df, paste(outputdir, "homeostasis_level.csv", sep = ""), row.names= FALSE)
+  #save decomposition data
+  df_trend <- data.frame(c(cgmtsall$timestamp), c(trend))
+  write.csv(df_trend, paste(outputdir, "trend.csv", sep = ""), row.names= FALSE)
+
+  df_seasonal <- data.frame(c(cgmtsall$timestamp), c(seasonal))
+  write.csv(df_seasonal, paste(outputdir, "seasonal.csv", sep = ""), row.names= FALSE)
+
+  df_remainder <- data.frame(c(cgmtsall$timestamp), c(remainder))
+  write.csv(df_remainder, paste(outputdir, "trend.csv", sep = ""), row.names= FALSE)
 
   #plot seasonal
   seafig <- plotly::plot_ly(
@@ -176,7 +182,7 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, htm
       )
     )
 
-  #plot trend
+  #plot reminder
   refig <- plotly::plot_ly(
     type = "scatter",
     x = c(cgmtsall$timestamp),
@@ -198,9 +204,9 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, htm
     )
 
   if(html){
-    htmlwidgets::saveWidget(seafig, paste(outputdir,fname,"_","seasonal", ".html",sep = ""))
-    htmlwidgets::saveWidget(trfig, paste(outputdir, fname,"_","trend", ".html",sep = ""))
-    htmlwidgets::saveWidget(refig, paste(outputdir, fname,"_","remainder", ".html",sep = ""))
+    htmlwidgets::saveWidget(seafig, paste(outputdir, fname,"_","seasonal", ".html", sep= ""))
+    htmlwidgets::saveWidget(trfig, paste(outputdir, fname,"_","trend", ".html", sep= ""))
+    htmlwidgets::saveWidget(refig, paste(outputdir, fname,"_","remainder", ".html", sep= ""))
   }else{
     oldworkdir = getwd()
     setwd(outputdir)

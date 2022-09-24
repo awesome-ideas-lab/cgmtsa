@@ -11,7 +11,6 @@
 #' @param maxgap If the missing gap is greater than max gap, the missing gap will be ignore when imputed.
 #' @param compeleteday Logical. If TRUE the day with missing data will be filtered.
 #' @param removeday Logical. If TRUE the day with missing gap greater than maxgap will be filtered.
-#' @param removeday Logical. If TRUE the day with missing gap greater than maxgap will be filtered.
 #' @param device Device type: 0 (manual format); 1 (Abbott libre freestyle); 2 (Medtronic ipro2); 3 (Dexcom G6), default 0.
 #' @param transunits Logical. If TURE the glucose values will be divided by 18.
 #' @param removeflday Logical. If TRUE the data of first and last day will be filter.
