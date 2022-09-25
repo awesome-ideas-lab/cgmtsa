@@ -5,7 +5,7 @@
 
 qcfun<- function(cgmts, outlierdet= TRUE, interval= 15, imputation= FALSE, immethod= "linear",
                  maxgap= 60, compeleteday= TRUE, removeday= FALSE, transunits= FALSE, removeflday= TRUE){
-  cgmts <- cgmts[order(lubridate::ymd_hms(cgmts$timestamp)),]
+  cgmts <- cgmts[order(lubridate::dmy_hm(cgmts$timestamp)),]
   vectimestamp <- as.vector(cgmts$timestamp)
   vectimestamp <- unlist(strsplit(vectimestamp, split= " "))
   maxtimestamp <- matrix(vectimestamp, ncol=2, byrow=T)[,1]
@@ -80,7 +80,7 @@ qcfun<- function(cgmts, outlierdet= TRUE, interval= 15, imputation= FALSE, immet
       udcgm <- cgmts[cgmts$timedate == d,]
       if(!any(is.na(udcgm$sglucose))){
         udcgmglucose <- udcgm$sglucose
-        udcgmts <- ts(udcgmglucose, frequency = freq)
+        udcgmts <- ts(udcgmglucose, frequency= freq)
         tsmodel <- forecast::auto.arima(udcgmts)
         ao <- TSA::detectAO(tsmodel)
         io <- TSA::detectIO(tsmodel)

@@ -30,7 +30,7 @@ prepro <- function(inputdir= "", outputdir= "", outlierdet= TRUE, interval= 15, 
 	  }
 
 	  cgmts  = qcfun(cgmts, outlierdet, interval, imputation, immethod, maxgap, compeleteday, removeday, transunits, removeflday)
-	  write.csv(cgmts, paste(outputdir,f,sep= ''), row.names = FALSE)
+	  write.csv(cgmts, paste(outputdir, f, sep= ''), row.names = FALSE)
 	  }
 }
 
@@ -40,7 +40,7 @@ fformat <- function(fpath, device = 0){
     cgmts <- read.csv(fpath)
     return(cgmts)
   }else if(device == 1){
-    cgmts <- read.table(fpath, sep = "\t", skip = 3, encoding = "UTF-8")
+    cgmts <- read.table(fpath, sep = "\t", skip= 3, encoding = "UTF-8")
     if(length(names(cgmts)) >4 ){
       cgmts <- dplyr::select(cgmts, 2,4,5)
       cgmts[is.na(cgmts$V4),]$V4 <- cgmts[is.na(cgmts$V4),]$V5
