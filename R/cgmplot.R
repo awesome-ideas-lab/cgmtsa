@@ -11,7 +11,7 @@
 #' @param html Logical.If TRUE the interactive plot will be exported, else the static pdf plot will exported.
 #' @export
 
-cgmplot <- function(inputdir, outputdir, useig= FALSE, markoutliers= TRUE, interval = 15,
+cgmplot <- function(inputdir, outputdir, useig= FALSE, markoutliers= TRUE, interval= 15,
                     diffnum = 1, html = TRUE){
   fileNames = list.files(inputdir)
   for(f in fileNames){
@@ -20,7 +20,8 @@ cgmplot <- function(inputdir, outputdir, useig= FALSE, markoutliers= TRUE, inter
     cgmtsall = read.csv(paste(inputdir, "/", f, sep = ''),stringsAsFactors= FALSE)
     vectimestamp <- as.vector(cgmtsall$timestamp)
     vectimestamp <- unlist(strsplit(vectimestamp,split=" "))
-    maxtimestamp <- matrix(vectimestamp, ncol= 2,byrow= T)[,1]
+    maxtimestamp <- matrix(vectimestamp, ncol= 2, byrow= T)[,1]
+    print(maxtimestamp)
     cgmtsall <- dplyr::mutate(cgmtsall, timedate = maxtimestamp)
     #print(head(cgmtsall))
     print("plottinig ACF")
@@ -216,18 +217,9 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig= TRUE, interval= 15, html
     setwd(outputdir)
   }
 
-  #orca(seafig, paste(outputdir,"/", fname,"_","seasonal", ".pdf",sep = ""))
-  #orca(trfig, paste(outputdir,"/", fname,"_","trend", ".pdf",sep = ""))
-  #orca(refig, paste(outputdir,"/", fname,"_","remainder", ".pdf",sep = ""))
-
-  #return(seafig)
 }
 
 
-
-
-#fname = ryan
-#cgmtrace(cgmts, "ryan", "Desktop/cgm_software/CGMTS/plotoutput")
 cgmtrace <- function(cgmtsall, fname, outputdir,useig = TRUE, markoutliers = TRUE, html = FALSE){
 
   cgmdate <- unique(cgmtsall$timedate)
