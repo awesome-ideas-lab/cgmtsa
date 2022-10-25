@@ -12,7 +12,7 @@
 #' @param interval The interval of CGM data.
 #' @export
 
-cgmmetrics <- function(inputdir, outputdir, useig= FALSE, diffnum= 1, threshold= 1, bthreshold= 3.9, athreshold= 10, interval= 15){
+cgmmetrics <- function(inputdir, outputdir, useig = FALSE, diffnum = 1, threshold =1, bthreshold = 3.9, athreshold = 10, interval = 15){
   fileNames = list.files(inputdir)
   freq = 1440/interval
   fnamevec <- c()
@@ -35,7 +35,6 @@ cgmmetrics <- function(inputdir, outputdir, useig= FALSE, diffnum= 1, threshold=
   pacf_3vec <- c()
   pacf_4vec <- c()
   pacf_5vec <- c()
-  
   for(f in fileNames){
     fname <- unlist(strsplit(f, split = "\\."))[1]
     fnamevec <- append(fnamevec, fname)
@@ -79,14 +78,14 @@ cgmmetrics <- function(inputdir, outputdir, useig= FALSE, diffnum= 1, threshold=
     pacf_4vec <- append(pacf_4vec, gpacf[4])
     pacf_5vec <- append(pacf_5vec, gpacf[5])
     mtcdf <- mtcgrpday(cgmtsall,useig = useig, threshold = threshold,  bthreshold = bthreshold, athreshold = athreshold, freq = freq)
-    write.csv(mtcdf, paste(outputdir,fname, "_metricsByDay.csv",sep = ""), row.names = FALSE)
+    write.csv(mtcdf, paste(outputdir,fname, "_metricsByDay.csv",sep = ""),row.names = FALSE)
   }
   summetrics <- data.frame(ID = fnamevec, SD = sdvec, Mean = meanvec, CV = cvvec, GMI = gmisvec,
                            LBGI = lbgivec, HBGI = hbgivec, MAGE = magevec, TIR = tirvec,
                            MODD = moddvec,acf_1 = acf_1vec, acf_2 = acf_2vec, acf_3 = acf_3vec,
                            acf_4 = acf_4vec, acf_5 = acf_5vec, pacf_1 = pacf_1vec, pacf_2 = pacf_2vec,
                            pacf_3 = pacf_3vec, pacf_4 = pacf_4vec, pacf_5 = pacf_5vec)
-  write.csv(summetrics, paste(outputdir,"metricsSummary.csv",sep = ""),row.names= FALSE)
+  write.csv(summetrics, paste(outputdir,"metricsSummary.csv",sep = ""),row.names = FALSE)
 }
 
 

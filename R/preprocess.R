@@ -11,26 +11,23 @@
 #' @param maxgap If the missing gap is greater than max gap, the missing gap will be ignore when imputed.
 #' @param compeleteday Logical. If TRUE the day with missing data will be filtered.
 #' @param removeday Logical. If TRUE the day with missing gap greater than maxgap will be filtered.
+#' @param removeday Logical. If TRUE the day with missing gap greater than maxgap will be filtered.
 #' @param device Device type: 0 (manual format); 1 (Abbott libre freestyle); 2 (Medtronic ipro2); 3 (Dexcom G6), default 0.
 #' @param transunits Logical. If TURE the glucose values will be divided by 18.
 #' @param removeflday Logical. If TRUE the data of first and last day will be filter.
 #' @export
-
-prepro <- function(inputdir= "", outputdir= "", outlierdet= TRUE, interval= 15, imputation= FALSE,
-                   immethod = "linear", maxgap= 60, compeleteday= TRUE, removeday= FALSE, device= 0, transunits= FALSE, removeflday= TRUE){
-	
-  fileNames = list.files(inputdir)
-	
-  for(f in fileNames){
+prepro <- function(inputdir="", outputdir="", outlierdet = TRUE, interval = 15, imputation = FALSE,
+                   immethod = "linear", maxgap = 60, compeleteday = TRUE, removeday = FALSE, device = 0, transunits = FALSE, removeflday = TRUE){
+	fileNames = list.files(inputdir)
+	for(f in fileNames){
 	  print(paste("processing file:", f))
-	  cgmts <- fformat(fpath= paste(inputdir, f, sep= ''), device= device)
+	  cgmts <- fformat(fpath = paste(inputdir, f, sep = ''), device = device)
 	  colnm <- colnames(cgmts)
 	  if(colnm[1] != "timestamp" || colnm[2] != "sglucose" || colnm[3] != "bglucose"){
-	    stop(paste("The format fo file '", f, "' is incorrect and cannot be read.", sep= ""))
+	    stop(paste("The format fo file '",f ,"' is incorrect and cannot be read.",sep = ""))
 	  }
-
-	  cgmts  = qcfun(cgmts, outlierdet, interval, imputation, immethod, maxgap, compeleteday, removeday, transunits, removeflday)
-	  write.csv(cgmts, paste(outputdir, f, sep= ''), row.names = FALSE)
+	  cgmts  = qcfun(cgmts, outlierdet, interval, imputation,immethod, maxgap, compeleteday,removeday, transunits, removeflday)
+	  write.csv(cgmts, paste(outputdir,f,sep=''),row.names = FALSE)
 	  }
 }
 
@@ -40,7 +37,7 @@ fformat <- function(fpath, device = 0){
     cgmts <- read.csv(fpath)
     return(cgmts)
   }else if(device == 1){
-    cgmts <- read.table(fpath, sep = "\t", skip= 3, encoding = "UTF-8")
+    cgmts <- read.table(fpath, sep = "\t", skip = 3, encoding = "UTF-8")
     if(length(names(cgmts)) >4 ){
       cgmts <- dplyr::select(cgmts, 2,4,5)
       cgmts[is.na(cgmts$V4),]$V4 <- cgmts[is.na(cgmts$V4),]$V5

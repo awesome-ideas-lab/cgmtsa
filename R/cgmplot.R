@@ -11,7 +11,7 @@
 #' @param html Logical.If TRUE the interactive plot will be exported, else the static pdf plot will exported.
 #' @export
 
-cgmplot <- function(inputdir, outputdir, useig= FALSE, markoutliers= TRUE, interval= 15,
+cgmplot <- function(inputdir, outputdir, useig= FALSE, markoutliers= TRUE, interval = 15,
                     diffnum = 1, html = TRUE){
   fileNames = list.files(inputdir)
   for(f in fileNames){
@@ -20,8 +20,7 @@ cgmplot <- function(inputdir, outputdir, useig= FALSE, markoutliers= TRUE, inter
     cgmtsall = read.csv(paste(inputdir, "/", f, sep = ''),stringsAsFactors= FALSE)
     vectimestamp <- as.vector(cgmtsall$timestamp)
     vectimestamp <- unlist(strsplit(vectimestamp,split=" "))
-    maxtimestamp <- matrix(vectimestamp, ncol= 2, byrow= T)[,1]
-    print(maxtimestamp)
+    maxtimestamp <- matrix(vectimestamp,ncol=2,byrow=T)[,1]
     cgmtsall <- dplyr::mutate(cgmtsall, timedate = maxtimestamp)
     #print(head(cgmtsall))
     print("plottinig ACF")
@@ -31,9 +30,9 @@ cgmplot <- function(inputdir, outputdir, useig= FALSE, markoutliers= TRUE, inter
     print("plottinig 3d")
     cgm3d(cgmtsall, fname, outputdir, useig, interval)
     print("plottinig decom")
-    cgmdecom(cgmtsall, fname, outputdir, useig, interval, html= html)
+    cgmdecom(cgmtsall, fname, outputdir, useig,interval, html = html)
     print("plottinig trace")
-    cgmtrace(cgmtsall, fname, outputdir, useig, markoutliers, html= html)
+    cgmtrace(cgmtsall, fname, outputdir,useig, markoutliers, html = html)
   }
 
 }
@@ -79,11 +78,11 @@ cgm3d <- function(cgmtsall, fname, outputdir, useig = TRUE,interval){
   x <- as.character(x$INTERVAL)
 
   if(useig){
-    z = matrix(cgmtsall$imglucose, ncol= freq, byrow= T)
+    z = matrix(cgmtsall$imglucose,ncol=freq,byrow=T)
   }else{
-    z = matrix(cgmtsall$sglucose, ncol= freq, byrow= T)
+    z = matrix(cgmtsall$sglucose,ncol=freq,byrow=T)
   }
-  fig <- plotly::plot_ly(x= x, z= z)
+  fig <- plotly::plot_ly(x = x, z = z)
   fig <- plotly::add_surface(fig)
   fig <- plotly::layout(fig,
       scene = list(
@@ -101,47 +100,36 @@ cgm3d <- function(cgmtsall, fname, outputdir, useig = TRUE,interval){
       zaxis = list(title = "Glucose Values")
     )
     )
-  htmlwidgets::saveWidget(fig, paste(outputdir, fname, "_", "3d", ".html", sep = ""))
+  htmlwidgets::saveWidget(fig, paste(outputdir, fname,"_","3d", ".html",sep = ""))
 }
 
 
-cgmdecom <- function(cgmtsall, fname, outputdir, useig= TRUE, interval= 15, html= FALSE){
+cgmdecom <- function(cgmtsall, fname, outputdir, useig = TRUE,interval = 15, html = FALSE){
   freq = 1440/interval
   uniday = unique(cgmtsall$timedate)
   #remove uncompelete day
   for(d in uniday){
     if(useig){
-      if(any(is.na(cgmtsall[cgmtsall$timedate == d,]$imglucose))){
-        cgmtsall[cgmtsall$timedate == d,]$timedate <- NA
+      if(any(is.na(cgmtsall[cgmtsall$timedate ==d,]$imglucose))){
+        cgmtsall[cgmtsall$timedate ==d,]$timedate <- NA
       }
     }else{
-      if(any(is.na(cgmtsall[cgmtsall$timedate == d,]$sglucose))){
-        cgmtsall[cgmtsall$timedate == d,]$timedate <- NA
+      if(any(is.na(cgmtsall[cgmtsall$timedate ==d,]$sglucose))){
+        cgmtsall[cgmtsall$timedate ==d,]$timedate <- NA
       }
     }
   }
   cgmtsall <- cgmtsall[!is.na(cgmtsall$timedate),]
   uniday = unique(cgmtsall$timedate)
   if(useig){
-    gts <- ts(cgmtsall$imglucose, frequency= freq)
+    gts <- ts(cgmtsall$imglucose, frequency = freq)
   }else{
-    gts <- ts(cgmtsall$sglucose, frequency= freq)
+    gts <- ts(cgmtsall$sglucose, frequency = freq)
   }
-  stlgts <- stl(gts, s.window= "periodic")
+  stlgts <- stl(gts,s.window = "periodic")
   seasonal <- stlgts$time.series[,1]
   trend <- stlgts$time.series[,2]
   remainder <- stlgts$time.series[,3]
-
-  #save decomposition data
-  df_trend <- data.frame(c(cgmtsall$timestamp), c(trend))
-  write.csv(df_trend, paste(outputdir, "trend.csv", sep = ""), row.names= FALSE)
-
-  df_seasonal <- data.frame(c(cgmtsall$timestamp), c(seasonal))
-  write.csv(df_seasonal, paste(outputdir, "seasonal.csv", sep = ""), row.names= FALSE)
-
-  df_remainder <- data.frame(c(cgmtsall$timestamp), c(remainder))
-  write.csv(df_remainder, paste(outputdir, "remainder.csv", sep = ""), row.names= FALSE)
-
   #plot seasonal
   seafig <- plotly::plot_ly(
     type = "scatter",
@@ -183,7 +171,7 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig= TRUE, interval= 15, html
       )
     )
 
-  #plot reminder
+  #plot trend
   refig <- plotly::plot_ly(
     type = "scatter",
     x = c(cgmtsall$timestamp),
@@ -205,9 +193,9 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig= TRUE, interval= 15, html
     )
 
   if(html){
-    htmlwidgets::saveWidget(seafig, paste(outputdir, fname,"_","seasonal", ".html", sep= ""))
-    htmlwidgets::saveWidget(trfig, paste(outputdir, fname,"_","trend", ".html", sep= ""))
-    htmlwidgets::saveWidget(refig, paste(outputdir, fname,"_","remainder", ".html", sep= ""))
+    htmlwidgets::saveWidget(seafig, paste(outputdir,fname,"_","seasonal", ".html",sep = ""))
+    htmlwidgets::saveWidget(trfig, paste(outputdir, fname,"_","trend", ".html",sep = ""))
+    htmlwidgets::saveWidget(refig, paste(outputdir, fname,"_","remainder", ".html",sep = ""))
   }else{
     oldworkdir = getwd()
     setwd(outputdir)
@@ -217,9 +205,18 @@ cgmdecom <- function(cgmtsall, fname, outputdir, useig= TRUE, interval= 15, html
     setwd(outputdir)
   }
 
+  #orca(seafig, paste(outputdir,"/", fname,"_","seasonal", ".pdf",sep = ""))
+  #orca(trfig, paste(outputdir,"/", fname,"_","trend", ".pdf",sep = ""))
+  #orca(refig, paste(outputdir,"/", fname,"_","remainder", ".pdf",sep = ""))
+
+  #return(seafig)
 }
 
 
+
+
+#fname = ryan
+#cgmtrace(cgmts, "ryan", "Desktop/cgm_software/CGMTS/plotoutput")
 cgmtrace <- function(cgmtsall, fname, outputdir,useig = TRUE, markoutliers = TRUE, html = FALSE){
 
   cgmdate <- unique(cgmtsall$timedate)
